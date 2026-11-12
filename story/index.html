@@ -19,7 +19,7 @@
   .tag{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.9;text-align:center;font-weight:600}
   h1{font-family:'Archivo Black',sans-serif;font-size:30px;line-height:1.05;text-align:center;margin:8px 0 4px;color:var(--amarelo);text-transform:uppercase}
   .sub{text-align:center;font-size:15px;opacity:.95;margin-bottom:16px}
-  .video{position:relative;border-radius:18px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.35);background:#000 url(poster.jpg) center/cover;aspect-ratio:478/850;width:min(100%, calc(58vh * 478 / 850));margin:0 auto}
+  .video{position:relative;border-radius:18px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.35);background:#000 url(poster.jpg) center/cover;aspect-ratio:478/850;width:min(78%, calc(62vh * 478 / 850));margin:0 auto}
   .video video{width:100%;height:100%;object-fit:cover;display:block}
   .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;border-radius:16px;
     font:800 18px Inter,sans-serif;padding:18px;margin-top:16px;cursor:pointer;text-decoration:none;
@@ -33,6 +33,11 @@
   .step{display:flex;gap:12px;margin-bottom:12px;font-size:15px;line-height:1.35}
   .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--amarelo);color:var(--escuro);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
   .mentions{font-weight:600;word-break:break-word;color:var(--amarelo)}
+  .card{background:rgba(11,42,37,.55);border-radius:16px;padding:16px;margin-top:14px}
+  .card .step{margin-bottom:0}
+  .card .btn{margin-top:14px}
+  .preview{text-align:center;font-size:14px;opacity:.9;margin:26px 0 10px}
+  .video{max-height:none}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:#fff;color:var(--escuro);
     font-weight:600;padding:12px 18px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.3);transition:transform .25s;font-size:14px;max-width:92vw;text-align:center}
   .toast.show{transform:translateX(-50%) translateY(0)}
@@ -44,24 +49,32 @@
 <main>
   <p class="tag">Atitude Rio Comprido</p>
   <h1>Me ajuda a espalhar?</h1>
-  <p class="sub">Salve o vídeo e poste no seu story em 1 minuto 🔥</p>
+  <p class="sub">Siga os passos abaixo e poste no seu story em 1 minuto 🔥</p>
 
+  <section class="card">
+    <div class="step"><span class="n">1</span><span>Salve o vídeo no seu celular<span class="ios">. No menu que abrir, toque em <b>Salvar Vídeo</b></span>.</span></div>
+    <button class="btn primary" id="save" disabled>Carregando vídeo…</button>
+    <a class="btn primary" id="download" href="video.mp4" download="point-atitude-rio-comprido.mp4" style="display:none">⬇️ Salvar vídeo</a>
+  </section>
+
+  <section class="card">
+    <div class="step"><span class="n">2</span><span>Abra o story. O Instagram abre na câmera: toque na <b>miniatura da galeria</b> (canto de baixo) e escolha o vídeo.</span></div>
+    <button class="btn primary" id="open">📸 Abrir o story do Instagram</button>
+  </section>
+
+  <section class="card">
+    <div class="step"><span class="n">3</span><span>No story, toque em <b>Aa</b>, segure o dedo e toque em <b>Colar</b>. As marcações já foram copiadas no passo 2: <span class="mentions" id="mtext"></span></span></div>
+    <button class="btn secondary" id="copy">📋 Copiar as marcações de novo</button>
+  </section>
+
+  <section class="card">
+    <div class="step last"><span class="n">4</span><span>Toque em <b>Seu story</b>. Pronto, obrigado por espalhar! 🙌</span></div>
+  </section>
+
+  <p class="preview">Este é o vídeo que vai pro seu story:</p>
   <div class="video">
     <video id="vid" src="video.mp4" poster="poster.jpg" playsinline muted loop autoplay preload="auto"></video>
   </div>
-
-  <button class="btn primary" id="save" disabled>Carregando vídeo…</button>
-  <a class="btn secondary" id="download" href="video.mp4" download="point-atitude-rio-comprido.mp4" style="display:none">⬇️ Baixar vídeo</a>
-  <button class="btn primary" id="open">2️⃣ Abrir o story do Instagram</button>
-  <button class="btn secondary" id="copy">📋 Copiar só as marcações</button>
-
-  <section class="steps">
-    <h2>Passo a passo</h2>
-    <div class="step"><span class="n">1</span><span>Toque em <b>Salvar vídeo</b><span class="ios"> e escolha <b>Salvar Vídeo</b></span>.</span></div>
-    <div class="step"><span class="n">2</span><span>Toque em <b>Abrir o story</b>. O Instagram abre na câmera: toque na <b>miniatura da galeria</b> (canto de baixo) e escolha o vídeo.</span></div>
-    <div class="step"><span class="n">3</span><span>Toque em <b>Aa</b>, segure o dedo e <b>Colar</b>. As marcações já estão copiadas: <span class="mentions" id="mtext"></span></span></div>
-    <div class="step"><span class="n">4</span><span>Toque em <b>Seu story</b>. Pronto, obrigado! 🙌</span></div>
-  </section>
 
   <footer>Point Atitude Rio Comprido · Domingo, 15/11 às 10h<br>Rua Caetano Martins, 36 · Rio Comprido</footer>
 </main>
@@ -98,13 +111,13 @@
   const dl = document.getElementById("download");
   if(!isIOS) document.querySelectorAll(".ios").forEach(e=>e.style.display="none");
 
-  function salvarPorDownload(){ save.style.display="none"; dl.style.display="flex"; dl.innerHTML="1️⃣ Salvar vídeo"; dl.className="btn primary"; }
+  function salvarPorDownload(){ save.style.display="none"; dl.style.display="flex"; }
 
   if(!isIOS){ salvarPorDownload(); }
   else {
     fetch("video.mp4").then(r=>r.blob()).then(b=>{
       arquivo = new File([b], NOME_ARQUIVO, {type:"video/mp4"});
-      if (navigator.canShare && navigator.canShare({files:[arquivo]})){ save.disabled=false; save.textContent="1️⃣ Salvar vídeo"; }
+      if (navigator.canShare && navigator.canShare({files:[arquivo]})){ save.disabled=false; save.textContent="⬇️ Salvar vídeo"; }
       else salvarPorDownload();
     }).catch(salvarPorDownload);
     save.addEventListener("click", ()=>{
