@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Point Atitude Rio Comprido · Compartilhe no seu story</title>
+<meta property="og:title" content="Point Atitude Rio Comprido · Domingo 15/11 às 10h">
+<meta property="og:description" content="Toque e compartilhe no seu story. Bora espalhar!">
+<meta property="og:image" content="poster.jpg">
+<meta name="theme-color" content="#e8481c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{--laranja:#e8481c;--verde:#0f6b5c;--amarelo:#f2ec5a;--escuro:#0b2a25}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;color:#fff;min-height:100vh;
+    background:linear-gradient(180deg,var(--laranja) 0%,#c8401c 40%,var(--verde) 100%);}
+  main{max-width:440px;margin:0 auto;padding:22px 18px 40px}
+  .tag{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.9;text-align:center;font-weight:600}
+  h1{font-family:'Archivo Black',sans-serif;font-size:30px;line-height:1.05;text-align:center;margin:8px 0 4px;color:var(--amarelo);text-transform:uppercase}
+  .sub{text-align:center;font-size:15px;opacity:.95;margin-bottom:16px}
+  .video{position:relative;border-radius:18px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.35);background:#000 url(poster.jpg) center/cover;aspect-ratio:478/850;width:min(100%, calc(58vh * 478 / 850));margin:0 auto}
+  .video video{width:100%;height:100%;object-fit:cover;display:block}
+  .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;border-radius:16px;
+    font:800 18px Inter,sans-serif;padding:18px;margin-top:16px;cursor:pointer;text-decoration:none;
+    -webkit-tap-highlight-color:transparent;transition:transform .08s}
+  .btn:active{transform:scale(.97)}
+  .primary{background:var(--amarelo);color:var(--escuro);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .primary[disabled]{opacity:.6}
+  .secondary{background:rgba(255,255,255,.14);color:#fff;font-size:15px;padding:14px;border:1px solid rgba(255,255,255,.35)}
+  .steps{background:rgba(11,42,37,.55);border-radius:16px;padding:16px 16px 6px;margin-top:18px}
+  .steps h2{font-size:14px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;color:var(--amarelo)}
+  .step{display:flex;gap:12px;margin-bottom:12px;font-size:15px;line-height:1.35}
+  .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--amarelo);color:var(--escuro);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .mentions{font-weight:600;word-break:break-word;color:var(--amarelo)}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:#fff;color:var(--escuro);
+    font-weight:600;padding:12px 18px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.3);transition:transform .25s;font-size:14px;max-width:92vw;text-align:center}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .fallback{display:none;font-size:13px;opacity:.9;text-align:center;margin-top:10px;line-height:1.4}
+  footer{text-align:center;font-size:12px;opacity:.8;margin-top:22px;line-height:1.5}
+</style>
+</head>
+<body>
+<main>
+  <p class="tag">Atitude Rio Comprido</p>
+  <h1>Me ajuda a espalhar?</h1>
+  <p class="sub">Um toque e esse vídeo vai pro seu story 🔥</p>
+
+  <div class="video">
+    <video id="vid" src="video.mp4" poster="poster.jpg" playsinline muted loop autoplay preload="auto"></video>
+  </div>
+
+  <button class="btn primary" id="share" disabled>Carregando vídeo…</button>
+  <p class="fallback" id="fallback">Seu navegador não abriu o compartilhamento direto. Toque em <b>Baixar vídeo</b> e poste pelo Instagram normalmente.</p>
+  <a class="btn secondary" id="download" href="video.mp4" download="point-atitude-rio-comprido.mp4" style="display:none">⬇️ Baixar vídeo</a>
+  <button class="btn secondary" id="copy">📋 Copiar só as marcações</button>
+
+  <section class="steps">
+    <h2>Como fica no seu story</h2>
+    <div class="step"><span class="n">1</span><span>Toque no botão amarelo e escolha <b>Instagram</b> → <b>Stories</b>.</span></div>
+    <div class="step"><span class="n">2</span><span>No story, toque em <b>Aa</b>, segure o dedo e toque em <b>Colar</b>. As marcações já estão copiadas: <span class="mentions" id="mtext"></span></span></div>
+    <div class="step"><span class="n">3</span><span>Toque em <b>Seu story</b>. Pronto, obrigado! 🙌</span></div>
+  </section>
+
+  <footer>Point Atitude Rio Comprido · Domingo, 15/11 às 10h<br>Rua Caetano Martins, 36 · Rio Comprido</footer>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+  const MENCOES = "@atituderiocomprido @chenriquecardoso @lilikilma";
+  const NOME_ARQUIVO = "point-atitude-rio-comprido.mp4";
+  document.getElementById("mtext").textContent = MENCOES;
+
+  const btn = document.getElementById("share");
+  const toastEl = document.getElementById("toast");
+  let arquivo = null;
+
+  function toast(msg){
+    toastEl.textContent = msg; toastEl.classList.add("show");
+    clearTimeout(toast.t); toast.t = setTimeout(()=>toastEl.classList.remove("show"), 3200);
+  }
+  function copiar(){
+    try{
+      if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(MENCOES).then(()=>true,()=>copiarAntigo());
+    }catch(e){}
+    return Promise.resolve(copiarAntigo());
+  }
+  function copiarAntigo(){
+    try{
+      const t=document.createElement("textarea"); t.value=MENCOES; t.setAttribute("readonly","");
+      t.style.position="fixed"; t.style.opacity="0"; document.body.appendChild(t); t.select();
+      const ok=document.execCommand("copy"); document.body.removeChild(t); return ok;
+    }catch(e){ return false; }
+  }
+  function mostrarFallback(){
+    document.getElementById("fallback").style.display="block";
+    document.getElementById("download").style.display="flex";
+    btn.style.display="none";
+  }
+
+  // Pré-carrega o vídeo como arquivo para o compartilhamento abrir na hora do toque
+  fetch("video.mp4").then(r=>r.blob()).then(b=>{
+    arquivo = new File([b], NOME_ARQUIVO, {type:"video/mp4"});
+    if (navigator.canShare && navigator.canShare({files:[arquivo]})){
+      btn.disabled=false; btn.textContent="📲 Postar no meu story";
+    } else { mostrarFallback(); }
+  }).catch(mostrarFallback);
+
+  btn.addEventListener("click", ()=>{
+    if(!arquivo) return;
+    copiar();                         // copia as marcações no mesmo toque
+    navigator.share({files:[arquivo]}) // abre o menu do celular com o vídeo
+      .then(()=>toast("Valeu! Agora é só colar as marcações no story 🙌"))
+      .catch(err=>{ if(err && err.name!=="AbortError") mostrarFallback(); });
+  });
+
+  document.getElementById("copy").addEventListener("click", ()=>{
+    copiar().then(ok=>toast(ok!==false ? "Marcações copiadas ✅" : "Copie manualmente: "+MENCOES));
+  });
+</script>
+</body>
+</html>
